@@ -45,7 +45,7 @@ const PostFeed = () => {
 
     try {
       await API.post("posts/", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        // Let the browser/axios set the Content-Type boundary automatically
       });
       setDescription("");
       setImage(null);
@@ -68,6 +68,27 @@ const PostFeed = () => {
     }
   };
 
+  // 🔹 Delete post
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this post?")) return;
+    try {
+      await API.delete(`posts/${id}/`);
+      fetchPosts();
+    } catch (err) {
+      console.error("Error deleting post:", err);
+      alert("Failed to delete post");
+    }
+  };
+
+  // Helper to ensure absolute URL for images
+  const buildUrl = (path) => {
+    if (!path) return null;
+    if (path.startsWith("http://") || path.startsWith("https://")) return path;
+    // ensure there's a leading slash
+    const p = path.startsWith("/") ? path : `/${path}`;
+    return `http://127.0.0.1:8000${p}`;
+  };
+
   return (
     <div className="feed-layout">
       {/* Left Profile Section */}
@@ -75,18 +96,14 @@ const PostFeed = () => {
         {user ? (
           <>
             <img
-              src={
-                user.profile_pic
-                  ? `http://127.0.0.1:8000${user.profile_pic}`
-                  : "/default-avatar.png"
-              }
+              src={user.profile_picture ? buildUrl(user.profile_picture) : "/default-avatar.png"}
               alt="Profile"
             />
             <h3>{user.full_name}</h3>
             <p className="profile-info">{user.email}</p>
-            {user.dob && (
+            {user.date_of_birth && (
               <p className="profile-info">
-                DOB – {new Date(user.dob).toLocaleDateString()}
+                DOB – {new Date(user.date_of_birth).toLocaleDateString()}
               </p>
             )}
             <p className="share-profile">Share Profile</p>
@@ -100,47 +117,62 @@ const PostFeed = () => {
       <div>
         {/* Create Post */}
         <div className="card post-creator">
-          <h3>Add Post</h3>
-          <form onSubmit={handleCreatePost}>
-            <textarea
-              placeholder="What's on your mind?"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows="3"
-            />
-            {image && (
-              <img
-                src={URL.createObjectURL(image)}
-                alt="Preview"
-                style={{
-                  width: "100%",
-                  borderRadius: "10px",
-                  marginBottom: "8px",
-                }}
-              />
-            )}
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <button className="btn" type="submit" disabled={loading}>
-                {loading ? "Posting..." : "Post"}
-              </button>
-              <label className="add-image-btn">
-                📷 Add Image
-                <input
-                  type="file"
-                  accept="image/*"
-                  style={{ display: "none" }}
-                  onChange={(e) => setImage(e.target.files[0])}
-                />
-              </label>
-            </div>
-          </form>
-        </div>
+  <h3>Add Post</h3>
+  <form onSubmit={handleCreatePost}>
+    <textarea
+      placeholder="What's on your mind?"
+      value={description}
+      onChange={(e) => setDescription(e.target.value)}
+      rows="3"
+    />
+    {image && (
+      <img
+        src={URL.createObjectURL(image)}
+        alt="Preview"
+        style={{
+          width: "100%",
+          borderRadius: "10px",
+          marginBottom: "8px",
+        }}
+      />
+    )}
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+      }}
+    >
+      <button className="btn" type="submit" disabled={loading}>
+        {loading ? "Posting..." : "Post"}
+      </button>
+
+      <div>
+        <input
+          id="fileInput"
+          type="file"
+          accept="image/*"
+          style={{ display: "none" }}
+          onChange={(e) => {
+            const file = e.target.files[0];
+            if (file) {
+              setImage(file);
+            }
+            e.target.value = "";
+          }}
+        />
+        <button
+          type="button"
+          className="add-image-btn"
+          onClick={() => document.getElementById("fileInput").click()}
+        >
+          📷 Add Image
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
 
         {/* Posts Feed */}
         {posts.length === 0 ? (
@@ -160,7 +192,7 @@ const PostFeed = () => {
                 <p style={{ marginTop: "8px" }}>{post.description}</p>
                 {post.image && (
                   <img
-                    src={`http://127.0.0.1:8000${post.image}`}
+                    src={buildUrl(post.image)}
                     alt="Post"
                     style={{ borderRadius: "10px", marginTop: "8px" }}
                   />
@@ -169,6 +201,12 @@ const PostFeed = () => {
                   <button onClick={() => handleLike(post.id)}>
                     👍 Like {post.likes_count}
                   </button>
+                  {/* Show delete button only for posts by the logged-in user */}
+                  {user && post.user === user.email && (
+                    <button style={{ marginLeft: 8 }} onClick={() => handleDelete(post.id)}>
+                      🗑️ Delete
+                    </button>
+                  )}
                 </div>
               </div>
             ))

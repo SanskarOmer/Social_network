@@ -53,7 +53,7 @@ const Profile = () => {
         <h3>My Profile</h3>
         {profile.profile_picture && (
           <img
-            src={`http://127.0.0.1:8000${profile.profile_picture}`}
+            src={profile.profile_picture.startsWith("http") ? profile.profile_picture : `http://127.0.0.1:8000${profile.profile_picture.startsWith("/") ? "" : "/"}${profile.profile_picture}`}
             alt="Profile"
             style={{ width: "100px", height: "100px", marginBottom: "10px" }}
           />
