@@ -3,11 +3,15 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Post
 from .serializers import PostSerializer
+from rest_framework.parsers import MultiPartParser, FormParser
 
 # List & Create Posts
 class PostListCreateView(generics.ListCreateAPIView):
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    # Allow file uploads using multipart/form-data
+    parser_classes = [MultiPartParser, FormParser]
 
     def get_queryset(self):
         # show only posts by the logged-in user

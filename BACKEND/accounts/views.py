@@ -4,8 +4,8 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import UserSignupSerializer, CustomTokenObtainPairSerializer
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import permission_classes
 from rest_framework import generics
+from rest_framework.parsers import MultiPartParser, FormParser
 from .serializers import UserProfileSerializer
 
 
@@ -25,8 +25,14 @@ class CustomLoginView(TokenObtainPairView):
 
 
 # PROFILE VIEW (GET & PATCH)
-@permission_classes([IsAuthenticated])
 class ProfileView(generics.RetrieveUpdateAPIView):
+    """
+    Retrieve and update the currently authenticated user's profile.
+    Added MultiPartParser and FormParser so file uploads (profile picture)
+    are accepted when the client sends multipart/form-data.
+    """
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
     serializer_class = UserProfileSerializer
 
     def get_object(self):
