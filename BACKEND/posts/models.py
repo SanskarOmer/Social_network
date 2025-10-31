@@ -7,7 +7,7 @@ class Post(models.Model):
         on_delete=models.CASCADE,
         related_name='posts'
     )
-    image = models.ImageField(upload_to='post_images/')
+    image = models.ImageField(upload_to='post_images/', blank=True, null=True)
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     likes = models.ManyToManyField(

@@ -48,3 +48,14 @@ class LikeToggleView(APIView):
         else:
             post.likes.add(user)
             return Response({"message": "Post liked!"}, status=status.HTTP_200_OK)
+        
+        
+class PostListCreateView(generics.ListCreateAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Post.objects.filter(user=self.request.user).order_by('-created_at')
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
