@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import API from "../utils/axiosConfig";
 
 const PostFeed = () => {
@@ -106,7 +107,9 @@ const PostFeed = () => {
                 DOB – {new Date(user.date_of_birth).toLocaleDateString()}
               </p>
             )}
-            <p className="share-profile">Share Profile</p>
+            <p className="share-profile">
+              <Link to="/profile" style={{ textDecoration: "none", color: "#007bff" }}>Edit Profile</Link>
+            </p>
           </>
         ) : (
           <p>Loading profile...</p>
@@ -202,7 +205,7 @@ const PostFeed = () => {
                     👍 Like {post.likes_count}
                   </button>
                   {/* Show delete button only for posts by the logged-in user */}
-                  {user && post.user === user.email && (
+                  {user && post.user_id && user.id && post.user_id === user.id && (
                     <button style={{ marginLeft: 8 }} onClick={() => handleDelete(post.id)}>
                       🗑️ Delete
                     </button>

@@ -11,9 +11,12 @@ const Login = () => {
     e.preventDefault();
     try {
       const res = await API.post("login/", { email, password });
-      localStorage.setItem("access", res.data.access);
-      localStorage.setItem("refresh", res.data.refresh);
-      navigate("/profile");
+  localStorage.setItem("access", res.data.access);
+  localStorage.setItem("refresh", res.data.refresh);
+  // Notify other components (Navbar) that auth state changed
+  window.dispatchEvent(new Event('authChanged'));
+  // After successful login, go directly to the feed
+  navigate("/feed");
     } catch (err) {
       alert("Invalid credentials");
     }
