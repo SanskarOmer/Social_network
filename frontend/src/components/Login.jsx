@@ -42,7 +42,7 @@ const Login = () => {
           <button className="btn" type="submit">Login</button>
         </form>
         <p className="text-center text-muted">
-          Don't have an account? <Link to="/signup">Sign up</Link>
+          Don't have an account? <Link to="/signup" style={{ textDecoration: 'none' }} >Sign up</Link>
         </p>
       </div>
     </div>

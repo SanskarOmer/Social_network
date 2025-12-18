@@ -9,7 +9,7 @@ const PostFeed = () => {
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // 🔹 Fetch logged-in user profile
+  // Fetch logged-in user profile
   const fetchUserProfile = async () => {
     try {
       const res = await API.get("profile/");
@@ -19,7 +19,7 @@ const PostFeed = () => {
     }
   };
 
-  // 🔹 Fetch posts
+  // Fetch posts
   const fetchPosts = async () => {
     try {
       const res = await API.get("posts/");

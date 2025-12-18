@@ -97,7 +97,7 @@ const Signup = () => {
           <button className="btn" type="submit">Create Account</button>
         </form>
         <p className="text-center text-muted">
-          Already have an account? <Link to="/login">Login</Link>
+          Already have an account? <Link to="/login" style={{ textDecoration: 'none' }} >Login</Link>
         </p>
       </div>
     </div>
